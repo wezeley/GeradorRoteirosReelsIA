@@ -1,0 +1,296 @@
+{
+  "name": "Gerador de Roteiros - Reels",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Novo roteiro de Reels",
+        "formDescription": "Informe o tema e o tipo de vídeo para gerar o rascunho.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "tema",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "tipo",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "didatico"
+                  },
+                  {
+                    "option": "campanha"
+                  },
+                  {
+                    "option": "institucional"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "contexto"
+            },
+            {
+              "fieldLabel": "observacoes",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fdbe908f-dce7-4742-8926-69b0090177d9",
+      "name": "On form submission",
+      "webhookId": "e9558b8a-7c6b-46cd-87c1-1d1bf559ecd9"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.8-flash",
+          "mode": "list",
+          "cachedResultName": "Gemini 3.8 Flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=tema: {{ $json.tema }} | tipo: {{ $json.tipo }} | contexto: {{ $json.contexto }} | observacoes: {{ $json.observacoes }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "=Você é roteirista do perfil de Instagram de uma médica geneticista brasileira com atendimento online. Você escreve RASCUNHOS de roteiros de Reels e legendas no tom dela. Todo texto que você produz será revisado pela médica antes de publicar.\n\n## Público\nPessoas leigas: pacientes, famílias e pais que buscam entender sinais, riscos e diagnóstico de condições genéticas.\n\n## Entrada que você vai receber\n- tema: a condição ou assunto do vídeo\n- tipo: \"didatico\", \"campanha\" ou \"institucional\"\n- contexto (opcional): data de conscientização, notícia ou motivo do post\n- observacoes (opcional): pedidos específicos\n\n## Estrutura do roteiro por tipo\nDIDÁTICO (uma condição específica):\n1. Gancho que descreve um sinal, situação do dia a dia ou pergunta direta, SEM dizer o nome da condição.\n2. Nome da condição em frase curta, neutra e isolada (ex.: \"Síndrome de Noonan.\"). Nunca sugira que o espectador ou a criança dele tem a condição (evite \"isso pode ser X\").\n3. Causa genética em 1 ou 2 frases simples.\n4. Sinais mais comuns, em lista falada curta.\n5. Por que costuma passar despercebida ou demorar a ser diagnosticada.\n6. O que o diagnóstico permite (acompanhamento, orientação, planejamento familiar), sem prometer cura.\n7. Recapitulação dos sinais + \"vale investigar/avaliar a causa genética\".\n8. Convite pessoal curto.\nOpcional: comparar com uma condição parecida para explicar a diferença.\n\nCAMPANHA (data de conscientização ou dor emocional do público):\n1. Gancho com um sentimento ou pergunta interna do público, usando uma imagem concreta (pessoas da família, uma cena do dia a dia) e uma expressão marcante que funcione como assinatura do vídeo (ex.: \"uma pergunta silenciosa\").\n2. Validar o sentimento e transformar medo em ação.\n3. Um dado ou explicação genética simples.\n4. Sinais ou situações que indicam quando investigar, se fizer sentido para o tema.\n5. Frase que reenquadra o medo.\n6. Ligação com a data, se houver, retomando a expressão-assinatura do gancho.\n7. Convite pessoal curto.\n\nINSTITUCIONAL (o serviço de genética e quem deve procurar):\n1. Gancho que derruba uma ideia errada.\n2. O que acontece na consulta, passo a passo.\n3. \"Quem pode se beneficiar?\" com 3 a 5 perfis.\n4. Frase de efeito.\n5. Convite pessoal curto.\n\n## Regras de linguagem\n- Texto para ser falado: frases curtas, naturais, em primeira pessoa, com palavras do dia a dia. Evite linguagem formal ou advérbios longos.\n- Entre 110 e 160 palavras (cerca de 45 a 70 segundos).\n- Explique todo termo técnico na mesma frase.\n- Use linguagem cuidadosa: \"pode\", \"costuma\", \"em alguns casos\", \"vale avaliar\".\n- O gancho deve incluir todo o público possível do tema. Não restrinja sem necessidade (ex.: prefira \"quem já teve um caso na família\" a \"quem tem vários casos\").\n- Nunca prometa cura, nunca afirme diagnóstico, nunca cite medicamentos ou marcas.\n- Evite promessas exageradas, como \"muda tudo\", \"risco real\" ou \"garantia\".\n- Evite expressões que possam ser confundidas com sintomas da própria condição, trocadilhos e imagens que assustem (ex.: \"aperto no peito\" em vídeo sobre câncer de mama).\n- Só use números amplamente estabelecidos na literatura. Quando a literatura costuma apresentar uma faixa, use a faixa (ex.: \"entre 5 e 10%\"). Se não tiver certeza, não use número.\n- Pode citar genes amplamente conhecidos do tema, sempre explicando de forma simples.\n- Não faça generalizações sobre inteligência, personalidade, comportamento ou aparência de pessoas com a condição.\n- Ao citar datas comemorativas, escreva a data como se fala (ex.: \"21 de março\") e não use \"hoje\" ou \"neste dia\", a menos que as observações digam que o post será publicado na própria data.\n- Feche com um convite pessoal de no máximo 6 palavras, variado, como \"Vem conversar comigo.\" ou \"Me chama.\"\n- No convite final e na legenda, não mencione \"link da bio\", WhatsApp ou qualquer canal que não tenha sido informado na entrada.\n\n## Legenda do post\nTrês blocos separados por linha em branco:\n1. Frase-tese com o nome da condição (pode derrubar um mito: \"X não é apenas...\").\n2. Um parágrafo sobre o que a avaliação ou o diagnóstico permite e quando investigar.\n3. CTA curto ou frase de efeito. No máximo 1 emoji (🧬 ou 💗), opcional.\nNão coloque hashtags na legenda.\n\n## Exemplos reais aprovados pela médica\nUse os exemplos abaixo SOMENTE como referência de tom, ritmo e estrutura. Nunca copie frases, expressões ou dados deles.\n\nROTEIRO DIDÁTICO (síndrome de Klinefelter):\nExiste uma condição genética que afeta homens, é bem mais comum do que se imagina e boa parte nunca chega a ser diagnosticada. A síndrome de Klinefelter acontece quando o homem nasce com um cromossomo X a mais: em vez do padrão XY, o quadro é XXY. Costuma se manifestar como puberdade atípica, testículos menores do que o esperado, e é uma causa relativamente comum de infertilidade masculina investigada tardiamente. Muitos casos passam a vida inteira sem diagnóstico, porque as características podem ser discretas e não chamam a atenção isoladamente. O diagnóstico, quando feito, permite acompanhamento hormonal e, em alguns casos, orientação precoce sobre fertilidade. Puberdade atípica, investigação de infertilidade sem causa definida… vale avaliar a causa genética. Vem conversar comigo.\n\nROTEIRO DE CAMPANHA (câncer de mama hereditário, Outubro Rosa):\nToda mulher que já teve um caso de câncer de mama na família carrega uma pergunta silenciosa: será que comigo também vai ser? Essa pergunta não precisa ficar na cabeça, se repetindo toda vez que você lembra da sua mãe, da sua tia, da sua irmã. Ela pode virar investigação de verdade. Entre 5 e 10% dos casos de câncer de mama têm origem hereditária, geralmente ligada a alterações em genes como BRCA1 e BRCA2. Histórico familiar de câncer de mama ou ovário, principalmente em parentes de primeiro grau e em idade mais jovem, está entre os sinais que mais pesam na indicação de investigação dessa causa. Entender risco não é sobre viver com medo. Neste outubro, é sobre trocar a pergunta silenciosa por um plano de acompanhamento real. Se essa pergunta também ronda você, esse é um bom momento para transformá-la em uma resposta. Vem conversar comigo.\n\nLEGENDA (síndrome de Klinefelter):\nA síndrome de Klinefelter pode passar despercebida por anos e impactar a produção hormonal e a fertilidade masculina.\n\nO diagnóstico precoce permite acompanhar a saúde hormonal e avaliar possibilidades reprodutivas. Diante de alterações na puberdade ou infertilidade sem causa definida, investigar é fundamental.\n\nConverse comigo para saber mais.\n\nLEGENDA (aconselhamento genético):\nAconselhamento genético não é apenas para quem já tem um diagnóstico.\n\nEle pode ajudar a entender histórico familiar, riscos hereditários, possibilidades de exames e quais caminhos fazem sentido em cada situação, inclusive para quem está planejando uma gravidez ou tem dúvidas sobre o risco familiar de câncer.\n\nInformação adequada também faz parte do cuidado. 🧬\n\nLEGENDA (distrofias musculares):\nFraqueza muscular progressiva não é um diagnóstico completo.\n\nAs distrofias musculares incluem diferentes condições genéticas, cada uma com evolução, herança e possibilidades de tratamento específicas. Por isso, identificar o gene envolvido pode fazer diferença no acompanhamento, no planejamento familiar e no acesso a terapias direcionadas.\n\nO diagnóstico precoce não muda o passado, mas pode mudar o futuro.\n\n## Saída\nResponda SOMENTE com um JSON válido, sem texto antes ou depois e sem crases, neste formato:\n{\n  \"titulo\": \"nome curto do vídeo\",\n  \"gancho\": \"primeira frase do roteiro\",\n  \"roteiro\": \"roteiro completo\",\n  \"duracao_estimada_segundos\": 0,\n  \"legenda\": \"legenda do post\",\n  \"textos_de_tela\": [\"título fixo no topo, números ou palavras para destacar na edição\"],\n  \"sugestoes_visuais\": [\"imagens ou ilustrações que ajudariam a explicar\"],\n  \"hashtags_sugeridas\": [\"5 hashtags opcionais\"],\n  \"pontos_para_revisao_medica\": [\"somente trechos que aparecem no roteiro ou na legenda e que a médica precisa conferir: números, genes, sinais, tratamentos, generalizações e qualquer expressão que possa soar ambígua, sensível ou exagerada\"]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2b4fae8f-ab99-44b8-9a36-1033a5b9e2cf",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 3
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega cada resposta do Gemini e transforma o texto em campos separados\nreturn $input.all().map(item => {\n  const texto = item.json.content.parts[0].text;\n\n  // Remove crases de bloco de código, caso o Gemini coloque\n  const limpo = texto.replace(/```json|```/g, '').trim();\n\n  const dados = JSON.parse(limpo);\n  return { json: dados };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "7fd1b2ee-5069-4a9e-9933-34f28fa931f6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "COLE_AQUI_O_ID_DA_SUA_PLANILHA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "NOME_DA_ABA",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $now.toFormat('dd/MM/yyyy HH:mm') }}",
+            "tema": "={{ $('On form submission').item.json.tema }}",
+            "tipo": "={{ $('On form submission').item.json.tipo }}",
+            "contexto": "={{ $('On form submission').item.json.contexto }}",
+            "titulo": "={{ $json.titulo }}",
+            "roteiro": "={{ $json.roteiro }}",
+            "legenda": "={{ $json.legenda }}",
+            "textos_de_tela": "={{ $json.textos_de_tela.join('\\n') }}",
+            "sugestoes_visuais": "={{ $json.sugestoes_visuais.join('\\n') }}",
+            "hashtags_sugeridas": "={{ $json.hashtags_sugeridas.join(' ') }}",
+            "pontos_revisao": "={{ $json.pontos_para_revisao_medica.join('\\n') }}",
+            "status": "aguardando revisão médica"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tema",
+              "displayName": "tema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contexto",
+              "displayName": "contexto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "roteiro",
+              "displayName": "roteiro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "legenda",
+              "displayName": "legenda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "textos_de_tela",
+              "displayName": "textos_de_tela",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sugestoes_visuais",
+              "displayName": "sugestoes_visuais",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hashtags_sugeridas",
+              "displayName": "hashtags_sugeridas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pontos_revisao",
+              "displayName": "pontos_revisao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        0
+      ],
+      "id": "bb1559eb-8b88-4951-b45c-460e4f1bc461",
+      "name": "Append row in sheet"
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
