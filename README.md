@@ -83,20 +83,20 @@ Por isso, todo conteúdo entra na planilha como **"aguardando revisão médica"*
 
 ## Resultado medido
 
-> ⏳ **Em medição.** Os números abaixo serão preenchidos com o tempo cronometrado em Reels reais produzidos com a automação.
+> **Em medição.** Os números abaixo serão preenchidos com o tempo cronometrado em Reels reais produzidos com a automação.
 
 **Método:** em cada Reels produzido com a automação, cronometrei cada etapa separadamente e registrei numa aba da planilha. O "antes" é a minha estimativa do processo anterior; o "depois" é cronometrado.
 
 | Etapa | Antes (estimativa) | Depois (média cronometrada) |
 |---|---|---|
-| Escolher a pauta | 30 min a 1h | ⏳ |
-| Formulário + resposta da IA | não existia | ⏳ |
-| Pesquisa / conferência dos pontos de revisão | 1h a 2h | ⏳ |
-| Roteiro e legenda / ajuste do rascunho | 2h a 3h | ⏳ |
-| **Total do meu trabalho por Reels** | **3h30 a 6h** | **⏳** |
-| Revisão da médica | ⏳ | ⏳ |
+| Escolher a pauta | 30 min a 1h | a medir |
+| Formulário + resposta da IA | não existia | a medir |
+| Pesquisa / conferência dos pontos de revisão | 1h a 2h | a medir |
+| Roteiro e legenda / ajuste do rascunho | 2h a 3h | a medir |
+| **Total do meu trabalho por Reels** | **3h30 a 6h** | **a medir** |
+| Revisão da médica | a medir | a medir |
 
-**Economia estimada:** ⏳ horas por semana (com 2 Reels por semana), considerando ⏳ Reels medidos.
+**Economia estimada:** a medir horas por semana (com 2 Reels por semana), considerando a medir Reels medidos.
 
 ## Ferramentas
 
