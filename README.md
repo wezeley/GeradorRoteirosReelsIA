@@ -130,5 +130,5 @@ Por isso, todo conteúdo entra na planilha como **"aguardando revisão médica"*
 
 ---
 
-**Wesley Lima** · Comunicador em transição para desenvolvimento e IA
+**Wesley Lima** · Estudante de ADS na UNIRP
 [LinkedIn](https://linkedin.com/in/wezeley) · [GitHub](https://github.com/wezeley)
