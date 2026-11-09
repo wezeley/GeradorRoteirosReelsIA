@@ -12,7 +12,7 @@ Construído a partir de um problema real do meu trabalho: desde 2023 sou respons
 
 Cada Reels do perfil passa por quatro etapas antes de ser gravado: escolher a pauta (datas de conscientização, notícias), pesquisar a condição, escrever roteiro e legenda, e revisar com a médica. Pela minha estimativa, isso leva de **3h30 a 6h do meu trabalho ativo por Reels**, e publicamos cerca de **2 Reels por semana**.
 
-O recurso mais escasso do processo é o tempo da médica, que divide a agenda entre pacientes e família. Hoje, roteiro e legenda costumam ser construídos em conjunto, o que pode levar até um dia de espera.
+O recurso mais escasso do processo é o tempo da médica, que divide a agenda entre pacientes e família. Roteiro e legenda eram construídos em conjunto e dependiam de encaixes na agenda dela, por isso o roteiro aprovado e o vídeo gravado levavam cerca de 2 dias para chegar. A legenda, escrita depois da edição do vídeo, muitas vezes chegava perto do horário de postagem.
 
 ## A solução
 
@@ -35,7 +35,7 @@ flowchart LR
 | Bloco | O que faz |
 |---|---|
 | **Formulário (n8n Form Trigger)** | Porta de entrada. Recebe `tema`, `tipo` (didático, campanha ou institucional), `contexto` opcional (data ou notícia) e `observacoes`. |
-| **Gemini (Message a model)** | Envia o pedido para a API do Gemini 3.8 Flash com um prompt de sistema detalhado e exige a resposta em JSON. Tenta de novo automaticamente em caso de instabilidade da API (até 3 tentativas, 5 s de intervalo). |
+| **Gemini (Message a model)** | Envia o pedido para a API do Gemini 3.8 Flash com um prompt de sistema detalhado e exige a resposta em JSON. Tenta de novo automaticamente em caso de instabilidade da API (até 5 tentativas, 5 s de intervalo). |
 | **Code (JavaScript)** | A IA devolve o JSON como texto. Este bloco remove possíveis marcações de código e faz o `JSON.parse`, separando cada parte em campos. |
 | **Google Sheets (Append row)** | Grava uma linha por conteúdo: data, tema, tipo, contexto, título, roteiro, legenda, textos de tela, sugestões visuais, hashtags, pontos de revisão e status. |
 
@@ -66,6 +66,7 @@ O prompt de sistema ([ver no fluxo](gerador-de-roteiros-reels.json)) foi constru
 | "Me chama no link da bio", canal inventado | Proibido citar canais não informados |
 | "Hoje, dia 21 de março", assumindo a data de publicação | Datas sem "hoje", a menos que informado |
 | "Aperto no peito" num vídeo sobre câncer de mama | Proibidas expressões que lembrem sintomas da própria condição |
+| No vídeo sobre atrofia muscular espinhal, a médica mudou o ângulo e acrescentou herança e triagem neonatal | Seguir o ângulo informado nas observações; explicar a herança e formas de diagnóstico precoce quando bem estabelecidas; condicionar o efeito do tratamento ("quando iniciado cedo") |
 
 4. **Exemplos reais (few-shot).** A versão final inclui roteiros e legendas reais aprovados pela médica, com a instrução de usar apenas o tom e a estrutura, nunca copiar frases. Na comparação com um vídeo já publicado, o rascunho reproduziu a estrutura e o tamanho; a diferença ficou na criatividade das expressões, que continua sendo papel humano.
 
@@ -81,22 +82,30 @@ Nos testes, a própria IA listou bem os pontos factuais para conferência (núme
 
 Por isso, todo conteúdo entra na planilha como **"aguardando revisão médica"**, e o status só muda para "aprovado" ou "publicado" depois da revisão.
 
-## Resultado medido
+## Resultado (fase de testes)
 
-> **Em medição.** Os números abaixo serão preenchidos com o tempo cronometrado em Reels reais produzidos com a automação.
+> Em uso piloto desde novembro de 2026. Os números abaixo vêm do primeiro Reels produzido com a automação (atrofia muscular espinhal) e da comparação com o processo anterior, e serão atualizados conforme novos vídeos forem produzidos.
 
-**Método:** em cada Reels produzido com a automação, cronometrei cada etapa separadamente e registrei numa aba da planilha. O "antes" é a minha estimativa do processo anterior; o "depois" é cronometrado.
+O maior ganho não está no tempo de escrita, mas na **espera pela médica**, que era o gargalo do processo.
 
-| Etapa | Antes (estimativa) | Depois (média cronometrada) |
+| | Antes | Com a automação |
 |---|---|---|
-| Escolher a pauta | 30 min a 1h | a medir |
-| Formulário + resposta da IA | não existia | a medir |
-| Pesquisa / conferência dos pontos de revisão | 1h a 2h | a medir |
-| Roteiro e legenda / ajuste do rascunho | 2h a 3h | a medir |
-| **Total do meu trabalho por Reels** | **3h30 a 6h** | **a medir** |
-| Revisão da médica | a medir | a medir |
+| Tempo até receber roteiro aprovado e vídeo gravado | cerca de 2 dias | cerca de 6 horas |
+| Legenda | escrita pela médica depois da edição do vídeo; com postagem por volta das 18h, costumava chegar depois das 17h | rascunho pronto desde o início; a médica só revisa |
+| Papel da médica | coautora do texto desde o zero | revisora de um rascunho no estilo do perfil |
 
-**Economia estimada:** a medir horas por semana (com 2 Reels por semana), considerando a medir Reels medidos.
+A escolha da pauta continua manual e leva o mesmo tempo, por isso fica fora da comparação.
+
+**Próxima medição:** cronometrar o meu tempo ativo e o tempo de revisão da médica nos próximos Reels, para confirmar se o ganho se mantém.
+
+## Limites e falhas encontradas
+
+A automação depende de uma API externa, e isso tem consequências que precisei tratar no uso real.
+
+- **Instabilidade da API.** Em novembro de 2026, durante uma sessão com a médica, a API do Gemini ficou vários minutos sem responder e terminou com erro 503 ("Service unavailable"). Aumentei as novas tentativas automáticas para 5, com 5 segundos de intervalo, o máximo que o n8n permite, mas a falha mostrou que só repetir não basta quando a API demora a responder. Naquele dia, o rascunho foi gerado no Google AI Studio com o mesmo prompt, e a saída planejada é um tempo limite com modelo reserva (ver Próximos passos).
+- **Resposta fora do formato.** Mesmo com a saída em JSON exigida, modelos de linguagem podem devolver o conteúdo dentro de marcações de código. Por precaução, o bloco de JavaScript limpa o texto antes de fazer o `JSON.parse`.
+- **Ângulo e conhecimento clínico.** No vídeo sobre atrofia muscular espinhal, a IA acertou a estrutura e o tom, mas a médica mudou o ângulo do vídeo e acrescentou informações que só a experiência dela trouxe, como a herança recessiva e a triagem neonatal. O prompt foi ajustado com regras gerais a partir dessa revisão (ver Engenharia de prompt), e a decisão sobre o que o vídeo diz continua sendo dela.
+- **Erros de tom que a própria IA não percebe.** Como mostrado na seção de revisão humana, o modelo lista bem os pontos factuais, mas não identifica generalizações ou expressões inadequadas. Essa limitação é o motivo de a revisão médica ser obrigatória.
 
 ## Ferramentas
 
@@ -123,6 +132,7 @@ Por isso, todo conteúdo entra na planilha como **"aguardando revisão médica"*
 
 ## Próximos passos
 
+- Tempo limite e modelo reserva: se o Gemini não responder a tempo, o fluxo cancela o pedido, usa um segundo modelo e registra na planilha qual modelo gerou o rascunho
 - Calendário de datas de conscientização na planilha, para sugerir pautas automaticamente
 - Busca de notícias recentes sobre o tema, como contexto para a IA
 - Novos formatos além de Reels (carrossel e post estático)
